@@ -1,0 +1,87 @@
+ext.projectIds = ['group': 'com.builders', 'version': '1.0.0']
+group = projectIds.group
+version = projectIds.version
+
+
+project(":utils") {
+    group = projectIds.group
+    version = projectIds.version
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation "junit:junit:4.13"
+    }
+}
+
+project(":services") {
+    group = projectIds.group
+    version = projectIds.version
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation project(':utils')
+        testImplementation "junit:junit:4.13"
+    }
+}
+
+project(":admin") {
+    group = projectIds.group
+    version = projectIds.version
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation project(':utils')
+        implementation project(':services')
+        testImplementation "junit:junit:4.13"
+    }
+
+}
+
+project(":web") {
+    group = projectIds.group
+    version = projectIds.version
+    apply plugin: 'java'
+    apply plugin: 'war'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation project(':services')
+        implementation project(':utils')
+        compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+        testImplementation "junit:junit:4.13"
+    }
+}
+
+task packageJar(type: Jar) {
+    baseName = 'jar-package'
+    destinationDirectory = layout.buildDirectory.dir("$rootDir/build")
+    from "$rootDir"
+    include "admin/**"
+    include "services/**"
+    include "utils/**"
+}
+
+task packageWar(type: War) {
+    baseName = 'war-pakage'
+    destinationDirectory = layout.buildDirectory.dir("$rootDir/build")
+    from "$rootDir"
+    include "web/**"
+}
+
+// I can use this line for disabling jar generation, but it not works for me
+//jar.enabled = false
